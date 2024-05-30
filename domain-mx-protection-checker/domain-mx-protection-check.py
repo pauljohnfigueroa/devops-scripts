@@ -1,5 +1,25 @@
 import dns.resolver
 import re
+import os
+import sys
+
+email_list = 'emails.txt'
+
+# Check if the file exists
+if not os.path.exists(email_list):
+    print(f"\n--- PLEASE FIX THE FOLLOWING ERROR: --------------------------------------------------------")
+    print(f"= The file 'emails.txt' does not exist.")
+    print(f"= Create an email.txt file, save the email addresses, one line per email address.")
+    print(f"--------------------------------------------------------------------------------------------\n")
+    sys.exit(1)
+
+# Check file is empty
+if os.path.getsize(email_list) == 0:
+    print(f"\n--- PLEASE FIX THE FOLLOWING ERROR: ---------------------------------------------------------")
+    print(f"= The file is empty.")
+    print(f"= Create an email.txt file, save the email addresses, one line per email address.")
+    print(f"--------------------------------------------------------------------------------------------\n")
+    sys.exit(1)
 
 # Read email addresses from a file
 with open('emails.txt', 'r') as file:
@@ -35,15 +55,14 @@ domains = set(filter(None, map(get_domain, emails)))
 with open('output.txt', 'w') as output_file:
     # Fetch MX record with the lowest priority for each domain
     print(f"\n=============================================================================================")
-    print(f"PROCESSED")
-    print(f"--------------------------------------------------------------------------------------------")
+    print(f"= PROCESSED")
+    print(f"=============================================================================================")
     for domain in domains:
         mx_record, priority = get_lowest_priority_mx(domain)
         if priority is not None:
             output_line = f"{domain}\t{mx_record}\t{priority}"
             output_file.write(output_line + '\n')
             print(">>", output_line)  # Print output to the screen
-            print(f"--------------------------------------------------------------------------------------------")
 
 # Save invalid email addresses to a separate file
 invalid_emails = [email for email in emails if get_domain(email) is None]
@@ -54,6 +73,3 @@ if invalid_emails:
     print(f"\n---------------------------------------------------------------------")
     print(f"INVALID DOMAIN/S: [ {len(invalid_emails)} ] (see invalid-domains.txt)")
     print(f"---------------------------------------------------------------------") 
-    # for email in invalid_emails:
-    #     print(email)
-    #     print(f"---------------------------------------------------------------------------------------------")
