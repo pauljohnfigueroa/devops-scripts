@@ -4,3 +4,7 @@ output*.txt
 aws
 scripts
 secrets
+data
+*.txt
+
+.DS_Store
